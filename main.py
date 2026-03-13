@@ -20,7 +20,7 @@ def start_listeners():
     db = get_firestore_client()
     builder = SearchPrefixBuilder()
 
-    collection_names = ["quests", "users", "locations"]
+    collection_names = ["quests", "users", "locations", "organizations"]
     listeners = []
 
     for collection_name in collection_names:

@@ -1,5 +1,6 @@
 import re
-from typing import Iterable, Set, List
+from typing import List, Set
+
 
 class SearchPrefixBuilder:
     TEXT_FIELDS = (
@@ -10,7 +11,7 @@ class SearchPrefixBuilder:
         "label_en",
         "label_ru",
         "username",
-        "name"
+        "name",
     )
 
     TAG_FIELDS = (
@@ -77,12 +78,3 @@ class SearchPrefixBuilder:
             prefixes.update(self.generate_prefixes(word))
 
         return sorted(prefixes)
-
-    def build_search_payload(self, doc: dict) -> dict:
-        keywords = self.extract_keywords(doc)
-        prefixes = self.build_prefixes(doc)
-
-        return {
-            "search_keywords": keywords,
-            "search_prefixes": prefixes,
-        }
