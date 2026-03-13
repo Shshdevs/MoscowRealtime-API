@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  moscow-realtime-server:
+    build: .
+    container_name: moscow-realtime-server
+    ports:
+      - "4000:80"  
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - YANDEX_AUTH=${YANDEX_AUTH}
+    volumes:
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:80/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
