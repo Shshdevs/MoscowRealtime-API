@@ -53,7 +53,7 @@ class YOLODetector:
                     class_name = self.model.names[int(box.cls)]
                     confidence = float(box.conf)
 
-                    if confidence > 0.7 and "Other" not in class_name:
+                    if confidence > 0.7 and "Other" not in class_name and "Peoples" not in class_name:
                         location_id, name = self.find_location_id_name(class_name)
                         detections.append({
                             "locationId": location_id,
