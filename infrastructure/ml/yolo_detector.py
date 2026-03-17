@@ -62,6 +62,8 @@ class YOLODetector:
                         })
                         detected_labels.append(class_name)
 
+            detections.sort(key=lambda x: x["confidence"], reverse=True)
+
             return detections, detected_labels
 
         except Exception as exc:
