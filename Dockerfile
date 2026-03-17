@@ -1,25 +1,29 @@
 FROM python:3.11-slim
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
     libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
-    libxrender-dev \
+    libxrender1 \
     libgomp1 \
-    libgthread-2.0-0 \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip cache purge && \
-    rm -rf /root/.cache/pip /tmp/* /var/tmp/*
+RUN python -m pip install --upgrade pip setuptools wheel
+
+RUN python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+RUN python -m pip install -r requirements.txt
 
 COPY . .
 
