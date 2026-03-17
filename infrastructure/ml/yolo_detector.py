@@ -54,11 +54,12 @@ class YOLODetector:
 
                     if confidence > 0.7 and "Other" not in class_name and "Peoples" not in class_name:
                         location_id, name = self.find_location_id_name(class_name)
-                        detections.append({
-                            "locationId": location_id,
-                            "name": name,
-                            "confidence": confidence,
-                        })
+                        if location_id is not None and name is not None:
+                            detections.append({
+                                "locationId": location_id,
+                                "name": name,
+                                "confidence": confidence,
+                            })
 
             detections.sort(key=lambda x: x["confidence"], reverse=True)
 
