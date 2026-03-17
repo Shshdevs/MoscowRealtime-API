@@ -29,7 +29,6 @@ RUN python -m pip install \
     --retries 10 \
     --timeout 120 \
     torch==2.9.0 \
-    torchvision==0.24.0 \
     --index-url https://download.pytorch.org/whl/cpu
 
 RUN python -m pip install --no-cache-dir -r requirements.txt
