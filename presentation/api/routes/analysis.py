@@ -37,7 +37,6 @@ def analyze_image():
             status_code = result.pop("status_code", 400)
             return jsonify(result), status_code
 
-        result.pop("labels", None)
         return jsonify(result), 200
 
     except ValueError as exc:

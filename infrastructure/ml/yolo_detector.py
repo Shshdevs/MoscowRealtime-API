@@ -46,7 +46,6 @@ class YOLODetector:
         try:
             results = self.model(image_np)
             detections = []
-            detected_labels = []
 
             for result in results:
                 for box in result.boxes:
@@ -60,11 +59,10 @@ class YOLODetector:
                             "name": name,
                             "confidence": confidence,
                         })
-                        detected_labels.append(class_name)
 
             detections.sort(key=lambda x: x["confidence"], reverse=True)
 
-            return detections, detected_labels
+            return detections
 
         except Exception as exc:
             logger.error("YOLO prediction error: %s", exc)

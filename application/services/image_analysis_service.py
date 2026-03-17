@@ -92,7 +92,7 @@ class ImageAnalysisService:
         compressed_image_data = self.compress_image(image_bytes)
         img = self._decode_image(compressed_image_data)
 
-        detections, labels = self.detector.predict(img)
+        detections = self.detector.predict(img)
 
         result = {
             "success": True,
@@ -114,7 +114,6 @@ class ImageAnalysisService:
             f"{self.public_base_url}/storage/v1/object/public/analyzed-images/{img_path}"
         )
         result["userAuthor"] = user_id
-        result["labels"] = labels
 
         result["id"] = self.history_repository.add(result)
         logger.info("Analysis saved with id=%s", result["id"])
