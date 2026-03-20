@@ -45,14 +45,15 @@ class YOLODetector:
         try:
             results = self.model(image_np)
             detections = []
-
+            
             for result in results:
+                print(len(result.boxes))
                 for box in result.boxes:
                     class_name = self.model.names[int(box.cls)]
                     confidence = float(box.conf)
-                    if confidence > 0.7 and "Other" not in class_name and "Peoples" not in class_name:
+                    if "Other" not in class_name and "Peoples" not in class_name:
                         location_id, name = self.find_location_id_name(class_name)
-                        if location_id is not None and location_id != " " and name is not None:
+                        if location_id is not None and name is not None:
                             detections.append({
                                 "locationId": location_id,
                                 "name": name,
