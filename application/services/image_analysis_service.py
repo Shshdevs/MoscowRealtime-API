@@ -110,9 +110,7 @@ class ImageAnalysisService:
 
         first_name = result["detections"][0].get("name")
         result["YandexGPTGuide"] = self.guide_provider(first_name)
-        result["imageSavedUrl"] = (
-            f"{self.public_base_url}/storage/v1/object/public/analyzed-images/{img_path}"
-        )
+        result["imageSavedUrl"] = f"{self.public_base_url}/storage/v1/object/public/analyzed-images/{img_path}"
         result["userAuthor"] = user_id
 
         result["id"] = self.history_repository.add(result)
