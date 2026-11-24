@@ -67,7 +67,13 @@ def main():
         Config.PORT,
     )
 
-    uvicorn.run(app, host=Config.HOST, port=Config.PORT, proxy_headers=True, forwarded_allow_ips="*")
+    uvicorn.run(
+        app,
+        host=Config.HOST,
+        port=Config.PORT,
+        proxy_headers=True,
+        forwarded_allow_ips="*",
+    )
 
 
 if __name__ == "__main__":

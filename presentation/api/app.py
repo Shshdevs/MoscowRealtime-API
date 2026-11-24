@@ -6,10 +6,8 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from config import Config
 from container import build_container
 from presentation.api.routes.analysis import router as analysis_router
 from presentation.api.routes.location import router as location_router
@@ -47,7 +45,11 @@ def create_app():
 
     @app.exception_handler(StarletteHTTPException)
     async def http_error_handler(request: Request, exc: StarletteHTTPException):
-        messages = {404: "Endpoint not found", 413: "File too large", 429: "Too many requests"}
+        messages = {
+            404: "Endpoint not found",
+            413: "File too large",
+            429: "Too many requests",
+        }
         return JSONResponse(
             {"success": False, "error": messages.get(exc.status_code, str(exc.detail))},
             status_code=exc.status_code,
@@ -55,7 +57,9 @@ def create_app():
 
     @app.exception_handler(Exception)
     async def internal_error_handler(request: Request, exc: Exception):
-        return JSONResponse({"success": False, "error": "Internal server error"}, status_code=500)
+        return JSONResponse(
+            {"success": False, "error": "Internal server error"}, status_code=500
+        )
 
     @app.get("/health")
     async def health_check():

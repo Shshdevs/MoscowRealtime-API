@@ -20,11 +20,15 @@ def analyze_image(
         service = container["image_analysis_service"]
         detector = container["detector"]
         if not detector.is_loaded():
-            return JSONResponse({"success": False, "error": "YOLO модель не загружена"}, status_code=503)
+            return JSONResponse(
+                {"success": False, "error": "YOLO модель не загружена"}, status_code=503
+            )
         user_id = user_id_query or user_id_form
         img_path = img_path_query or img_path_form
         if not img_path:
-            return JSONResponse({"success": False, "error": "Missing imgPath"}, status_code=400)
+            return JSONResponse(
+                {"success": False, "error": "Missing imgPath"}, status_code=400
+            )
         result = service.analyze(img_path=img_path, user_id=user_id)
         if result.get("success") is False:
             status_code = result.pop("status_code", 400)
@@ -38,4 +42,6 @@ def analyze_image(
         return JSONResponse({"success": False, "error": str(exc)}, status_code=503)
     except Exception as exc:
         logger.exception("Analyze request failed: %s", exc)
-        return JSONResponse({"success": False, "error": "Internal server error"}, status_code=500)
+        return JSONResponse(
+            {"success": False, "error": "Internal server error"}, status_code=500
+        )
