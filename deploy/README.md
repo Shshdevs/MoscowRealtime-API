@@ -6,7 +6,8 @@ This deployment runs the API behind nginx and serves ACME HTTP-01 challenges for
 
 1. Point the No-IP A record for `moscowrealtime-api.sytes.net` to the server's public IPv4 address. If the address changes, configure a No-IP Dynamic Update Client on the host or router.
 2. Allow inbound TCP ports 80 and 443 in the host firewall and forward them from the router to this server. The router must have a public address; CGNAT prevents inbound access without a public IP, tunnel, or provider-side port forwarding.
-3. Create the project `.env` with the variables used by the API and export `LETSENCRYPT_EMAIL` for certificate notifications.
+3. Create the project `.env` from [`.env.example`](../.env.example) and fill in the required Supabase and Yandex Cloud values. Add the Firebase service account key, YOLO weights, and location metadata under `sensitive/` as described in the root [README](../README.md).
+4. Export `LETSENCRYPT_EMAIL` for certificate notifications.
 
 ## Start
 
