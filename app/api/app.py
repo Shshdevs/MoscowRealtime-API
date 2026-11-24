@@ -11,6 +11,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.container import ApplicationContainer, build_container
 from app.api.routes.analysis import router as analysis_router
+from app.api.routes.events import router as events_router
 from app.api.routes.location import router as location_router
 from app.infrastructure.firebase.listeners.collection_listener import CollectionListener
 from app.infrastructure.firebase.search.search_indexer import SearchIndexer
@@ -42,6 +43,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 logger.info("Started listener for collection: %s", collection_name)
             yield
         finally:
+            try:
+                container["events_data_source"].close()
+            except Exception:
+                logger.exception("Failed to close events data source")
             for listener in reversed(listeners):
                 try:
                     listener.stop()
@@ -110,4 +115,5 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(location_router, prefix="/api")
     app.include_router(analysis_router, prefix="/api")
+    app.include_router(events_router, prefix="/api")
     return app

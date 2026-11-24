@@ -19,6 +19,7 @@ class Settings:
     yandex_api_key: str | None
     yandex_folder: str | None
     yandex_model: str | None
+    events_api_token: str | None
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -44,4 +45,5 @@ class Settings:
             or os.getenv("YANDEX_AUTH"),
             yandex_folder=os.getenv("YANDEX_CLOUD_FOLDER"),
             yandex_model=os.getenv("YANDEX_CLOUD_MODEL"),
+            events_api_token=os.getenv("TIMEPAD_API_TOKEN"),
         )

@@ -1,13 +1,15 @@
 from functools import partial
 from typing import TypedDict
 
-from firebase_admin import firestore
+from google.cloud.firestore import Client
 
 from app.application.services.image_analysis_service import ImageAnalysisService
+from app.application.services.events_service import EventsService
 from app.application.services.location_service import LocationService
 from app.infrastructure.firebase.discovery_repository import FirestoreDiscoveryRepository
 from app.infrastructure.firebase.firebase_client import get_firestore_client
 from app.infrastructure.firebase.location_repository import FirestoreLocationRepository
+from app.infrastructure.events.events_data_source import EventsDataSource
 from app.infrastructure.ml.yolo_detector import YOLODetector
 from app.infrastructure.yandex_gpt.yandex_guide import runYandexGPT
 from app.infrastructure.supabase.supabase_manager import SupabaseStorageManager
@@ -15,13 +17,15 @@ from app.shared.config import Settings
 
 
 class ApplicationContainer(TypedDict):
-    db: firestore.Client
+    db: Client
     location_repository: FirestoreLocationRepository
     discovery_repository: FirestoreDiscoveryRepository
     location_service: LocationService
     detector: YOLODetector
     storage_manager: SupabaseStorageManager
     image_analysis_service: ImageAnalysisService
+    events_data_source: EventsDataSource
+    events_service: EventsService
 
 
 def build_container(settings: Settings) -> ApplicationContainer:
@@ -61,6 +65,8 @@ def build_container(settings: Settings) -> ApplicationContainer:
         public_base_url=settings.supabase_url,
     )
 
+    events_data_source = EventsDataSource(settings.events_api_token)
+
     return {
         "db": db,
         "location_repository": location_repository,
@@ -69,4 +75,6 @@ def build_container(settings: Settings) -> ApplicationContainer:
         "detector": detector,
         "storage_manager": storage_manager,
         "image_analysis_service": image_analysis_service,
+        "events_data_source": events_data_source,
+        "events_service": EventsService(events_data_source),
     }

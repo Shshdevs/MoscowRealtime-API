@@ -8,6 +8,7 @@ FastAPI service for recognizing Moscow landmarks in images with a local YOLO mod
 - Firebase service account credentials
 - Supabase project and storage bucket named `analyzed-images`
 - Yandex Cloud AI Studio API key, folder ID, and model
+- Timepad API token with only the `view_events` permission
 - YOLO weights and the matching location metadata
 
 ## Configuration
@@ -18,7 +19,7 @@ Create a local environment file from the example:
 cp .env.example .env
 ```
 
-Set the Supabase and Yandex values in `.env`. The Yandex model URI is built as `gpt://<YANDEX_CLOUD_FOLDER>/<YANDEX_CLOUD_MODEL>`. Set `CORS_ALLOWED_ORIGINS` to a comma-separated list of allowed origins and `FORWARDED_ALLOW_IPS` to the IP addresses of trusted proxies.
+Set the Supabase, Yandex, and `TIMEPAD_API_TOKEN` values in `.env`. The Timepad token is read only by this server and must not be copied into the mobile app or its build configuration. Grant only `view_events`. The Yandex model URI is built as `gpt://<YANDEX_CLOUD_FOLDER>/<YANDEX_CLOUD_MODEL>`. Set `CORS_ALLOWED_ORIGINS` to a comma-separated list of allowed origins and `FORWARDED_ALLOW_IPS` to the IP addresses of trusted proxies.
 
 Place these runtime files in `sensitive/`:
 
@@ -66,6 +67,16 @@ curl --get http://localhost:4000/api/closest \
   --data-urlencode 'lat=55.7558' \
   --data-urlencode 'lon=37.6173'
 ```
+
+### Get events
+
+```sh
+curl 'http://localhost:4000/api/events?limit=100&skip=0'
+curl --get http://localhost:4000/api/events/nearby --data-urlencode 'lat=55.7558' --data-urlencode 'lon=37.6173' --data-urlencode 'radius=1000'
+curl http://localhost:4000/api/events/12345
+```
+
+Event responses use provider-neutral fields. The nearby endpoint scans at most 500 upcoming Moscow events and returns only entries that include coordinates within the requested radius. The source currently provides coordinates for only a portion of events, so nearby results may be incomplete.
 
 ### Analyze an image
 

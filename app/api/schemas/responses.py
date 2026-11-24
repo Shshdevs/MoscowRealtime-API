@@ -24,3 +24,42 @@ class HealthResponse(BaseModel):
     status: str
     timestamp: str
     version: str
+
+
+class EventDateResponse(BaseModel):
+    start: int
+    end: int
+
+
+class EventVenueResponse(BaseModel):
+    city: str | None = None
+    address: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+
+
+class EventResponse(BaseModel):
+    id: int
+    title: str
+    description: str
+    body_text: str
+    dates: list[EventDateResponse]
+    categories: list[str]
+    age_restriction: str | None = None
+    price_min: float | None = None
+    price_max: float | None = None
+    is_free: bool
+    image_url: str | None = None
+    site_url: str
+    venue: EventVenueResponse | None = None
+
+
+class EventsResponse(BaseModel):
+    success: bool = True
+    total: int
+    events: list[EventResponse]
+
+
+class EventDetailResponse(BaseModel):
+    success: bool = True
+    event: EventResponse
