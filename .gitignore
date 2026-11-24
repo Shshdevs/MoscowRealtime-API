@@ -3,3 +3,6 @@
 __pycache__/
 .DS_Store
 sensitive/
+deploy/certbot/
+deploy/certbot-renewal.log
+deploy/nginx/conf.d/tls.conf
