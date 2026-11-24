@@ -1,72 +1,41 @@
 import logging
 
-from flask import Blueprint, current_app, jsonify, request
-
+from fastapi import APIRouter, Form, Query, Request
+from fastapi.responses import JSONResponse
 
 logger = logging.getLogger(__name__)
+router = APIRouter()
 
-analysis_bp = Blueprint("analysis", __name__)
 
-
-@analysis_bp.route("/analyze", methods=["POST"])
-def analyze_image():
+@router.post("/analyze")
+def analyze_image(
+    request: Request,
+    user_id_query: str | None = Query(default=None, alias="userId"),
+    img_path_query: str | None = Query(default=None, alias="imgPath"),
+    user_id_form: str | None = Form(default=None, alias="userId"),
+    img_path_form: str | None = Form(default=None, alias="imgPath"),
+):
     try:
-        service = current_app.container["image_analysis_service"]
-        detector = current_app.container["detector"]
-
+        container = request.app.state.container
+        service = container["image_analysis_service"]
+        detector = container["detector"]
         if not detector.is_loaded():
-            return jsonify(
-                {
-                    "success": False,
-                    "error": "YOLO модель не загружена",
-                }
-            ), 503
-
-        user_id = request.args.get("userId") or request.form.get("userId")
-        img_path = request.args.get("imgPath") or request.form.get("imgPath")
-
+            return JSONResponse({"success": False, "error": "YOLO модель не загружена"}, status_code=503)
+        user_id = user_id_query or user_id_form
+        img_path = img_path_query or img_path_form
         if not img_path:
-            return jsonify(
-                {
-                    "success": False,
-                    "error": "Missing imgPath",
-                }
-            ), 400
-
-        result = service.analyze(
-            img_path=img_path,
-            user_id=user_id,
-        )
-
+            return JSONResponse({"success": False, "error": "Missing imgPath"}, status_code=400)
+        result = service.analyze(img_path=img_path, user_id=user_id)
         if result.get("success") is False:
             status_code = result.pop("status_code", 400)
-            return jsonify(result), status_code
-
-        return jsonify(result), 200
-
+            return JSONResponse(result, status_code=status_code)
+        return result
     except ValueError as exc:
         logger.warning("Bad analyze request: %s", exc)
-        return jsonify(
-            {
-                "success": False,
-                "error": str(exc),
-            }
-        ), 400
-
+        return JSONResponse({"success": False, "error": str(exc)}, status_code=400)
     except RuntimeError as exc:
         logger.error("Service unavailable: %s", exc)
-        return jsonify(
-            {
-                "success": False,
-                "error": str(exc),
-            }
-        ), 503
-
+        return JSONResponse({"success": False, "error": str(exc)}, status_code=503)
     except Exception as exc:
         logger.exception("Analyze request failed: %s", exc)
-        return jsonify(
-            {
-                "success": False,
-                "error": "Internal server error",
-            }
-        ), 500
+        return JSONResponse({"success": False, "error": "Internal server error"}, status_code=500)

@@ -1,6 +1,6 @@
 # Moscow Realtime API
 
-Flask API for recognizing Moscow landmarks in images with a local YOLO model, finding nearby locations, and generating landmark descriptions with Yandex Cloud AI Studio.
+FastAPI service for recognizing Moscow landmarks in images with a local YOLO model, finding nearby locations, and generating landmark descriptions with Yandex Cloud AI Studio.
 
 ## Requirements
 

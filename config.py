@@ -9,8 +9,6 @@ class Config:
 
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024
 
-    WAITRESS_THREADS = int(os.getenv("WAITRESS_THREADS", 4))
-
     SUPABASE_URL = os.getenv("SUPABASE_URL")
     SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 

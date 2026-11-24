@@ -1,7 +1,7 @@
 import logging
 import signal
 
-from waitress import serve
+import uvicorn
 
 from config import Config
 from shared.logging import setup_logging
@@ -67,13 +67,7 @@ def main():
         Config.PORT,
     )
 
-    serve(
-        app,
-        host=Config.HOST,
-        port=Config.PORT,
-        threads=Config.WAITRESS_THREADS,
-        url_prefix="/api",
-    )
+    uvicorn.run(app, host=Config.HOST, port=Config.PORT, proxy_headers=True, forwarded_allow_ips="*")
 
 
 if __name__ == "__main__":
