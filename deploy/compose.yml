@@ -3,12 +3,8 @@ services:
     build:
       context: ..
     container_name: moscow-realtime-server
-    environment:
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_KEY: ${SUPABASE_KEY}
-      YANDEX_AUTH: ${YANDEX_AUTH}
-    volumes:
-      - ../.env:/app/.env:ro
+    env_file:
+      - ../.env
     restart: unless-stopped
 
   nginx:
