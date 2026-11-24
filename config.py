@@ -2,7 +2,6 @@ import os
 
 
 class Config:
-
     APP_NAME = "Moscow Realtime API"
 
     HOST = os.getenv("HOST", "0.0.0.0")

@@ -39,8 +39,8 @@ def start_listeners():
     logger.info("Started %s listeners", len(listeners))
     return listeners
 
-def main():
 
+def main():
     logger.info("Starting application")
 
     listeners = start_listeners()
@@ -48,7 +48,6 @@ def main():
     app = create_app()
 
     def shutdown_handler(signum, frame):
-
         logger.info("Shutdown signal received")
 
         try:
@@ -75,6 +74,7 @@ def main():
         threads=Config.WAITRESS_THREADS,
         url_prefix="/api",
     )
+
 
 if __name__ == "__main__":
     main()

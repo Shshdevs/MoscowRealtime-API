@@ -5,7 +5,11 @@ logger = logging.getLogger(__name__)
 
 
 class YOLODetector:
-    def __init__(self, model_path: str = "sensitive/best.pt", locations_path: str = "sensitive/locations.json"):
+    def __init__(
+        self,
+        model_path: str = "sensitive/best.pt",
+        locations_path: str = "sensitive/locations.json",
+    ):
         self.model_path = model_path
         self.locations_path = locations_path
         self.model = None
@@ -14,6 +18,7 @@ class YOLODetector:
     def load_model(self):
         try:
             from ultralytics import YOLO
+
             self.model = YOLO(self.model_path)
             logger.info("YOLO model loaded successfully")
         except ImportError as exc:
@@ -45,7 +50,7 @@ class YOLODetector:
         try:
             results = self.model(image_np)
             detections = []
-            
+
             for result in results:
                 print(len(result.boxes))
                 for box in result.boxes:
@@ -54,12 +59,13 @@ class YOLODetector:
                     if "Other" not in class_name and "Peoples" not in class_name:
                         location_id, name = self.find_location_id_name(class_name)
                         if location_id is not None and name is not None:
-                            detections.append({
-                                "locationId": location_id,
-                                "name": name,
-                                "confidence": confidence,
-                            }
-                        )
+                            detections.append(
+                                {
+                                    "locationId": location_id,
+                                    "name": name,
+                                    "confidence": confidence,
+                                }
+                            )
 
             detections.sort(key=lambda x: x["confidence"], reverse=True)
 

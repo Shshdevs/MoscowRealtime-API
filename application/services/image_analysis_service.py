@@ -36,7 +36,9 @@ class ImageAnalysisService:
             img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
             if img is None:
-                logger.warning("Failed to decode image for compression, returning original")
+                logger.warning(
+                    "Failed to decode image for compression, returning original"
+                )
                 return image_data
 
             height, width = img.shape[:2]
@@ -45,7 +47,9 @@ class ImageAnalysisService:
                 scale = min(max_width / width, max_height / height)
                 new_width = int(width * scale)
                 new_height = int(height * scale)
-                img = cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_AREA)
+                img = cv2.resize(
+                    img, (new_width, new_height), interpolation=cv2.INTER_AREA
+                )
                 logger.info(
                     "Image resized from %sx%s to %sx%s",
                     width,
@@ -110,7 +114,9 @@ class ImageAnalysisService:
 
         first_name = result["detections"][0].get("name")
         result["YandexGPTGuide"] = self.guide_provider(first_name)
-        result["imageSavedUrl"] = f"{self.public_base_url}/storage/v1/object/public/analyzed-images/{img_path}"
+        result["imageSavedUrl"] = (
+            f"{self.public_base_url}/storage/v1/object/public/analyzed-images/{img_path}"
+        )
         result["userAuthor"] = user_id
 
         result["id"] = self.history_repository.add(result)

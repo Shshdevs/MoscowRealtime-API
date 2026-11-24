@@ -11,7 +11,6 @@ from config import Config
 
 
 def create_app():
-
     app = Flask(__name__)
 
     app.config.from_object(Config)
@@ -51,7 +50,6 @@ def create_app():
 
 
 def register_error_handlers(app):
-
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({"success": False, "error": "Bad request"}), 400
