@@ -1,5 +1,6 @@
 import logging
 import time
+from contextlib import asynccontextmanager
 from datetime import datetime
 
 from fastapi import FastAPI, Request
@@ -8,19 +9,51 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from container import build_container
-from presentation.api.routes.analysis import router as analysis_router
-from presentation.api.routes.location import router as location_router
+from app.container import ApplicationContainer, build_container
+from app.api.routes.analysis import router as analysis_router
+from app.api.routes.location import router as location_router
+from app.infrastructure.firebase.listeners.collection_listener import CollectionListener
+from app.infrastructure.firebase.search.search_indexer import SearchIndexer
+from app.infrastructure.firebase.search.search_prefix_builder import SearchPrefixBuilder
+from app.shared.config import Settings
+from app.shared.constants import FIRESTORE_COLLECTIONS
 
 logger = logging.getLogger(__name__)
 
 
-def create_app():
-    app = FastAPI()
-    app.state.container = build_container()
+def create_app(settings: Settings | None = None) -> FastAPI:
+    settings = settings or Settings.from_env()
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        container: ApplicationContainer = app.state.container
+        builder = SearchPrefixBuilder()
+        listeners = []
+        try:
+            for collection_name in FIRESTORE_COLLECTIONS:
+                indexer = SearchIndexer(
+                    db=container["db"],
+                    builder=builder,
+                    collection_name=collection_name,
+                )
+                listener = CollectionListener(indexer=indexer)
+                listener.start()
+                listeners.append(listener)
+                logger.info("Started listener for collection: %s", collection_name)
+            yield
+        finally:
+            for listener in reversed(listeners):
+                try:
+                    listener.stop()
+                except Exception:
+                    logger.exception("Failed to stop Firestore listener")
+
+    app = FastAPI(title=settings.app_name, lifespan=lifespan)
+    app.state.settings = settings
+    app.state.container = build_container(settings)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=list(settings.cors_allowed_origins),
         allow_methods=["GET", "POST"],
         allow_headers=["Content-Type", "Authorization"],
     )
@@ -57,6 +90,12 @@ def create_app():
 
     @app.exception_handler(Exception)
     async def internal_error_handler(request: Request, exc: Exception):
+        logger.error(
+            "Unhandled request error: %s %s",
+            request.method,
+            request.url.path,
+            exc_info=(type(exc), exc, exc.__traceback__),
+        )
         return JSONResponse(
             {"success": False, "error": "Internal server error"}, status_code=500
         )

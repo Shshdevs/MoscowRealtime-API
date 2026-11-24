@@ -1,23 +1,12 @@
 import re
 from typing import List, Set
 
+from app.shared.constants import SEARCH_TAG_FIELDS, SEARCH_TEXT_FIELDS
+
 
 class SearchPrefixBuilder:
-    TEXT_FIELDS = (
-        "description_en",
-        "description_ru",
-        "title_en",
-        "title_ru",
-        "label_en",
-        "label_ru",
-        "username",
-        "name",
-    )
-
-    TAG_FIELDS = (
-        "tags_en",
-        "tags_ru",
-    )
+    TEXT_FIELDS = SEARCH_TEXT_FIELDS
+    TAG_FIELDS = SEARCH_TAG_FIELDS
 
     _PUNCT_RE = re.compile(r"[^\w\s]", re.UNICODE)
 

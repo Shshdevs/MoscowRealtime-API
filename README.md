@@ -18,7 +18,7 @@ Create a local environment file from the example:
 cp .env.example .env
 ```
 
-Set the Supabase and Yandex values in `.env`. The Yandex model URI is built as `gpt://<YANDEX_CLOUD_FOLDER>/<YANDEX_CLOUD_MODEL>`.
+Set the Supabase and Yandex values in `.env`. The Yandex model URI is built as `gpt://<YANDEX_CLOUD_FOLDER>/<YANDEX_CLOUD_MODEL>`. Set `CORS_ALLOWED_ORIGINS` to a comma-separated list of allowed origins and `FORWARDED_ALLOW_IPS` to the IP addresses of trusted proxies.
 
 Place these runtime files in `sensitive/`:
 
@@ -36,7 +36,7 @@ Install dependencies and start the API:
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python main.py
+python -m app.main
 ```
 
 The API listens on port 80 by default.

@@ -1,10 +1,15 @@
 import logging
-import os
 from datetime import datetime
 
 import cv2
 import numpy as np
 
+from app.shared.constants import (
+    ANALYZED_IMAGES_BUCKET,
+    IMAGE_ANALYSIS_JPEG_QUALITY,
+    IMAGE_ANALYSIS_MAX_HEIGHT,
+    IMAGE_ANALYSIS_MAX_WIDTH,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -16,20 +21,20 @@ class ImageAnalysisService:
         storage_manager,
         history_repository,
         guide_provider,
-        public_base_url: str | None = None,
+        public_base_url: str,
     ):
         self.detector = detector
         self.storage_manager = storage_manager
         self.history_repository = history_repository
         self.guide_provider = guide_provider
-        self.public_base_url = public_base_url or os.getenv("SUPABASE_URL", "")
+        self.public_base_url = public_base_url
 
     def compress_image(
         self,
         image_data: bytes,
-        quality: int = 85,
-        max_width: int = 1920,
-        max_height: int = 1080,
+        quality: int = IMAGE_ANALYSIS_JPEG_QUALITY,
+        max_width: int = IMAGE_ANALYSIS_MAX_WIDTH,
+        max_height: int = IMAGE_ANALYSIS_MAX_HEIGHT,
     ) -> bytes:
         try:
             nparr = np.frombuffer(image_data, np.uint8)
@@ -115,7 +120,7 @@ class ImageAnalysisService:
         first_name = result["detections"][0].get("name")
         result["YandexGPTGuide"] = self.guide_provider(first_name)
         result["imageSavedUrl"] = (
-            f"{self.public_base_url}/storage/v1/object/public/analyzed-images/{img_path}"
+            f"{self.public_base_url}/storage/v1/object/public/{ANALYZED_IMAGES_BUCKET}/{img_path}"
         )
         result["userAuthor"] = user_id
 

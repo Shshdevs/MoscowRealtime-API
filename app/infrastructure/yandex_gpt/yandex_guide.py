@@ -1,22 +1,7 @@
 import openai
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
-def runYandexGPT(text):
-    api_key = os.getenv("YANDEX_CLOUD_API_KEY") or os.getenv("YANDEX_AUTH")
-    folder_id = os.getenv("YANDEX_CLOUD_FOLDER")
-    model = os.getenv("YANDEX_CLOUD_MODEL")
-
-    if not api_key:
-        raise RuntimeError("YANDEX_CLOUD_API_KEY or YANDEX_AUTH is not configured")
-    if not folder_id:
-        raise RuntimeError("YANDEX_CLOUD_FOLDER is not configured")
-    if not model:
-        raise RuntimeError("YANDEX_CLOUD_MODEL is not configured")
-
+def runYandexGPT(text: str, api_key: str, folder_id: str, model: str) -> str:
     client = openai.OpenAI(
         api_key=api_key,
         base_url="https://ai.api.cloud.yandex.net/v1",

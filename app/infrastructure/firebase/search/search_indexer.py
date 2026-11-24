@@ -1,16 +1,12 @@
 import logging
 
+from app.shared.constants import SEARCH_FIELDS_BY_COLLECTION
 
 logger = logging.getLogger(__name__)
 
 
 class SearchIndexer:
-    COLLECTION_SEARCH_FIELDS = {
-        "organizations": ("search_keywords",),
-        "quests": ("search_prefixes",),
-        "users": ("search_prefixes",),
-        "locations": ("search_prefixes",),
-    }
+    COLLECTION_SEARCH_FIELDS = SEARCH_FIELDS_BY_COLLECTION
 
     def __init__(self, db, builder, collection_name: str = "quests"):
         self.db = db

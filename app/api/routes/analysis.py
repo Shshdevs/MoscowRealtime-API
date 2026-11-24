@@ -1,7 +1,10 @@
 import logging
+from typing import cast
 
 from fastapi import APIRouter, Form, Query, Request
 from fastapi.responses import JSONResponse
+
+from app.container import ApplicationContainer
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -16,7 +19,7 @@ def analyze_image(
     img_path_form: str | None = Form(default=None, alias="imgPath"),
 ):
     try:
-        container = request.app.state.container
+        container = cast(ApplicationContainer, request.app.state.container)
         service = container["image_analysis_service"]
         detector = container["detector"]
         if not detector.is_loaded():
@@ -40,8 +43,3 @@ def analyze_image(
     except RuntimeError as exc:
         logger.error("Service unavailable: %s", exc)
         return JSONResponse({"success": False, "error": str(exc)}, status_code=503)
-    except Exception as exc:
-        logger.exception("Analyze request failed: %s", exc)
-        return JSONResponse(
-            {"success": False, "error": "Internal server error"}, status_code=500
-        )

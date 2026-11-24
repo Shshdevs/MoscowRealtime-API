@@ -2,6 +2,7 @@ from supabase import create_client, Client
 from typing import Optional
 import logging
 import time
+from app.shared.constants import ANALYZED_IMAGES_BUCKET
 
 logger = logging.getLogger(__name__)
 
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 class SupabaseStorageManager:
     def __init__(self, supabase_url: str, supabase_key: str):
         self.supabase: Client = create_client(supabase_url, supabase_key)
-        self.bucket_name = "analyzed-images"
+        self.bucket_name = ANALYZED_IMAGES_BUCKET
 
     def get_image_by_url(
         self,
