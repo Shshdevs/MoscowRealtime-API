@@ -61,7 +61,7 @@ def create_app():
             {"success": False, "error": "Internal server error"}, status_code=500
         )
 
-    @app.get("/health")
+    @app.get("/api/health")
     async def health_check():
         return {
             "status": "healthy",
@@ -69,6 +69,6 @@ def create_app():
             "version": "1.0.0",
         }
 
-    app.include_router(location_router)
-    app.include_router(analysis_router)
+    app.include_router(location_router, prefix="/api")
+    app.include_router(analysis_router, prefix="/api")
     return app
