@@ -6,16 +6,24 @@ load_dotenv()
 
 
 def runYandexGPT(text):
-    YANDEX_CLOUD_FOLDER = os.getenv("YANDEX_CLOUD_API_KEY")
-    YANDEX_CLOUD_MODEL = os.getenv("YANDEX_CLOUD_MODEL")
+    api_key = os.getenv("YANDEX_CLOUD_API_KEY") or os.getenv("YANDEX_AUTH")
+    folder_id = os.getenv("YANDEX_CLOUD_FOLDER")
+    model = os.getenv("YANDEX_CLOUD_MODEL")
+
+    if not api_key:
+        raise RuntimeError("YANDEX_CLOUD_API_KEY or YANDEX_AUTH is not configured")
+    if not folder_id:
+        raise RuntimeError("YANDEX_CLOUD_FOLDER is not configured")
+    if not model:
+        raise RuntimeError("YANDEX_CLOUD_MODEL is not configured")
 
     client = openai.OpenAI(
-        api_key=os.getenv("YANDEX_CLOUD_API_KEY"),
+        api_key=api_key,
         base_url="https://ai.api.cloud.yandex.net/v1",
-        project=os.getenv("YANDEX_CLOUD_FOLDER"),
+        project=folder_id,
     )
     response = client.responses.create(
-        model=f"gpt://{YANDEX_CLOUD_FOLDER}/{YANDEX_CLOUD_MODEL}",
+        model=f"gpt://{folder_id}/{model}",
         temperature=0.41,
         instructions=
             """Твоя роль это опытный и интересный экскурсовод по городу Москве. 
@@ -27,8 +35,8 @@ def runYandexGPT(text):
             Твой рассказ должен быть интересным, новым и вдохновляющим, чтобы слушателю хотелось дальше продолжить экскурсию.
             """,
         input=text,
-        max_output_tokens=2287,
-        store=True,
+        max_output_tokens=837,
+        store=False,
         truncation="disabled",
     )
     return response.output_text
